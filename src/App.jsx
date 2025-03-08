@@ -26,6 +26,7 @@ function App() {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
       logsRef.current.push(secondsPassed.toFixed(3));
+      setNow(null); 
     }
   }
 
