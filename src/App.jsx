@@ -1,45 +1,45 @@
-import { useState } from "react";
-
+import { useRef, useState } from "react";
 import "./App.css";
-const initialContacts = [
-  { id: 0, name: "Aarav", email: "aarav@mail.com" },
-  { id: 1, name: "Vivaan", email: "vivaan@mail.com" },
-  { id: 2, name: "Aditya", email: "aditya@mail.com" },
-  { id: 3, name: "Vihaan", email: "vihaan@mail.com" },
-  { id: 4, name: "Arjun", email: "arjun@mail.com" },
-  { id: 5, name: "Sai", email: "sai@mail.com" },
-  { id: 6, name: "Reyansh", email: "reyansh@mail.com" },
-  { id: 7, name: "Ayaan", email: "ayaan@mail.com" },
-  { id: 8, name: "Krishna", email: "krishna@mail.com" },
-  { id: 9, name: "Ishaan", email: "ishaan@mail.com" },
-];
-function EmailSys({name,email}) {
-  const [clicked, setClicked] = useState(false);
-  
-  return (
-    <div className="email-sys">
-      <h1>{name}</h1>
-      {clicked ? (
-        <h2>{email}</h2>
-      ) : (
-        <button onClick={() => setClicked((clicked) => !clicked)}>
-          show email
-        </button>
-      )}
-    </div>
-  );
-}
+
 function App() {
-  const [contacts,setContacts]=useState(initialContacts);
-  const list=contacts.map((contact)=><EmailSys key={contact.id} name={contact.name} email={contact.email}/>)
+  const [now, setNow] = useState(null);
+  const startTime = useRef(null);
+  const intervalRef = useRef(null);
+  const logsRef = useRef([]);
+  let secondsPassed = 0;
+
+  if (startTime.current != null && now != null) {
+    secondsPassed = (now - startTime.current) / 1000;
+  }
+
+  function handleStart() {
+    startTime.current = Date.now();
+    setNow(Date.now());
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    intervalRef.current = setInterval(() => setNow(Date.now()), 10);
+  }
+
+  function handleStop() {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      logsRef.current.push(secondsPassed.toFixed(3));
+    }
+  }
+
   return (
     <>
-      <label>
-        <input type="checkbox" onChange={() =>setContacts([...contacts].reverse())} /> Show in reverse order{" "}
-      </label>
-      <div className="container">
-        {list}
-      </div>
+      <h1>time passed: {secondsPassed.toFixed(3)}</h1>
+      <button onClick={handleStart}>start</button>
+      <button onClick={handleStop}>stop</button>
+      <h2>Logs:</h2>
+      <ul className="logs">
+        {logsRef.current.map((log, index) => (
+          <li key={index}>{log} seconds</li>
+        ))}
+      </ul>
     </>
   );
 }
